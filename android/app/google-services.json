@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "986493928850",
+    "project_id": "aicruit-app",
+    "storage_bucket": "aicruit-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986493928850:android:b0e6287b2b50b97a3c6d4b",
+        "android_client_info": {
+          "package_name": "com.example.resume_ai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "986493928850-7jjgmts25d7rqivqcktb5mkmb4ls8c0b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.resume_ai",
+            "certificate_hash": "2bc9d157691c2220970381e053ce59dd4106f7ff"
+          }
+        },
+        {
+          "client_id": "986493928850-tamil9bb8gied7ssubnnpuf4cs6tjcqk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyfCIBoGI2Tnhvqk3Q1OnP8VM9xI4bk4U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "986493928850-tamil9bb8gied7ssubnnpuf4cs6tjcqk.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "986493928850-jbgonvoki4ni2gbrl0076skb9cj8814r.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.resumeAi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
