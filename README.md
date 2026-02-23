@@ -1,4 +1,4 @@
-# resume_ai
+# AICruit An AI based Resume Analysis and Interview Preparation System 
 
 A new Flutter project.
 
