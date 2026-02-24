@@ -29,6 +29,11 @@ class ResumeViewmodel with ChangeNotifier {
   void uploadResume() async {
     try {
       _resumePath = await _uploadResume.uploadResume();
+      if (_resumePath == null) {
+        _pdfPageImages = null;
+        notifyListeners();
+        return;
+      }
       notifyListeners();
 
       _pdfPageImages = await _uploadResume.convertPDFToImages(_resumePath!);

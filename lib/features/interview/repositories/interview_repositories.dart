@@ -102,6 +102,40 @@ class InterviewRepositories {
     }
   }
 
+  Future<void> clearInterviewConversation({
+    required String topicId,
+    required String difficultyLevel,
+  }) async {
+    try {
+      if (_auth.currentUser == null) return;
+
+      final docRef = _firestore
+          .collection('users')
+          .doc(_auth.currentUser!.uid)
+          .collection('interviewConversations')
+          .doc(_conversationDocId(topicId, difficultyLevel));
+
+      while (true) {
+        final snapshot = await _conversationMessages(
+          topicId: topicId,
+          difficultyLevel: difficultyLevel,
+        ).limit(400).get();
+
+        if (snapshot.docs.isEmpty) break;
+
+        final batch = _firestore.batch();
+        for (final doc in snapshot.docs) {
+          batch.delete(doc.reference);
+        }
+        await batch.commit();
+      }
+
+      await docRef.delete();
+    } catch (e) {
+      log('clearInterviewConversation repository: $e');
+    }
+  }
+
   Future<String> interviewWithAva({
     required List<Map<String, dynamic>> interviewModelMap,
     required String difficultyLevel,

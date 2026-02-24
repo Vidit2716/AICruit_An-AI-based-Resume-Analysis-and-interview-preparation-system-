@@ -228,6 +228,60 @@ class _InterviewPageState extends State<InterviewPage> {
     );
   }
 
+  Future<void> _startFreshConversation() async {
+    final interviewViewModel =
+        Provider.of<InterviewViewModel>(context, listen: false);
+    final userModel = Provider.of<CurrentUserModel>(context, listen: false);
+
+    if (interviewViewModel.isAvaReplying ||
+        interviewViewModel.isAvaSpeaking ||
+        interviewViewModel.isPreparingSession) {
+      return;
+    }
+
+    final bool? shouldReset = await showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Start Fresh Interview'),
+          content: const Text(
+            'This will clear the previous conversation for this topic and difficulty. Continue?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Start Fresh'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldReset != true) return;
+
+    await _speechToText.stop();
+    if (!mounted) return;
+
+    final shouldSpeakIntro = await interviewViewModel.clearAndStartFreshSession(
+      topicModel: widget.topicModel,
+      userName: userModel.user?.name ?? '',
+    );
+
+    if (!mounted) return;
+    setState(() {
+      _lastWords = '';
+    });
+
+    if (shouldSpeakIntro &&
+        (interviewViewModel.avaResponse ?? '').trim().isNotEmpty) {
+      await interviewViewModel.avaSpeaks(interviewViewModel.avaResponse!);
+    }
+  }
+
   @override
   void dispose() {
     _speechToText.stop();
@@ -258,6 +312,11 @@ class _InterviewPageState extends State<InterviewPage> {
           backgroundColor: Colors.black,
           iconTheme: const IconThemeData(color: Colors.white),
           actions: [
+            IconButton(
+              onPressed: _startFreshConversation,
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Clear and start fresh',
+            ),
             IconButton(
               onPressed: _showConversationSheet,
               icon: const Icon(Icons.chat_bubble_outline),

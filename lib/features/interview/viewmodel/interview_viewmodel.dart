@@ -140,6 +140,54 @@ class InterviewViewModel with ChangeNotifier {
     return shouldSpeakIntro;
   }
 
+  Future<bool> clearAndStartFreshSession({
+    required TopicModel topicModel,
+    required String userName,
+  }) async {
+    bool shouldSpeakIntro = false;
+
+    _isPreparingSession = true;
+    _activeTopic = topicModel;
+    _activeUserName = userName.trim().isEmpty ? 'there' : userName.trim();
+    _avaResponse = null;
+    notifyListeners();
+
+    try {
+      await avaStop();
+
+      await _interviewRepositories.clearInterviewConversation(
+        topicId: topicModel.id,
+        difficultyLevel: _interviewDifficulty,
+      );
+
+      _interviewModelMap.clear();
+
+      final intro = _buildIntroMessage(
+        topicModel: topicModel,
+        userName: _activeUserName,
+      );
+      shouldSpeakIntro = true;
+
+      await setInterviewModelMap(
+        [
+          {
+            'message': intro,
+            'isUser': false,
+          }
+        ],
+      );
+
+      _avaResponse = intro;
+    } catch (e) {
+      log('clearAndStartFreshSession viewmodel: $e');
+    } finally {
+      _isPreparingSession = false;
+      notifyListeners();
+    }
+
+    return shouldSpeakIntro;
+  }
+
   Future setInterviewModelMap(
       List<Map<String, dynamic>> interviewModelMap) async {
     final filtered = interviewModelMap

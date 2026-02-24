@@ -17,8 +17,32 @@ class ResumeRepositories {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  ResumeModel _emptyResumeModel() {
+    return ResumeModel(
+      firstName: '',
+      lastName: '',
+      bio: '',
+      yearsOfExp: '',
+      email: '',
+      phone: '',
+      skills: [],
+      portfolioLink: '',
+      linkedinLink: '',
+      githubLink: '',
+      otherLink: '',
+      gender: 'Male',
+      maritalStatus: 'Single',
+      projectsControllers: [],
+      workExperienceControllers: [],
+      educationControllers: [],
+      achievementsControllers: [],
+    );
+  }
+
   Future<bool> saveResume(ResumeModel resumeModel, BuildContext context) async {
     try {
+      if (_auth.currentUser == null) return false;
+
       await _firestore
           .collection('users')
           .doc(_auth.currentUser!.uid)
@@ -44,6 +68,8 @@ class ResumeRepositories {
   }
 
   Future<ResumeModel> getResume() async {
+    if (_auth.currentUser == null) return _emptyResumeModel();
+
     DocumentSnapshot<Map<String, dynamic>> resumeDoc = await _firestore
         .collection('users')
         .doc(_auth.currentUser!.uid)
@@ -51,30 +77,16 @@ class ResumeRepositories {
         .doc(_auth.currentUser!.uid)
         .get();
 
-    return ResumeModel.fromMap(resumeDoc.data()!);
+    final data = resumeDoc.data();
+    if (data == null) return _emptyResumeModel();
+    return ResumeModel.fromMap(data);
   }
 
   Future<bool> deleteCurrentResume(BuildContext context) async {
     try {
-      ResumeModel resumeModel = ResumeModel(
-        firstName: '',
-        lastName: '',
-        bio: '',
-        yearsOfExp: '',
-        email: '',
-        phone: '',
-        skills: [],
-        portfolioLink: '',
-        linkedinLink: '',
-        githubLink: '',
-        otherLink: '',
-        gender: 'Male',
-        maritalStatus: 'Single',
-        projectsControllers: [],
-        workExperienceControllers: [],
-        educationControllers: [],
-        achievementsControllers: [],
-      );
+      if (_auth.currentUser == null) return false;
+
+      ResumeModel resumeModel = _emptyResumeModel();
 
       context.read<CurrentResumemodel>().setResumeModel(resumeModel);
 

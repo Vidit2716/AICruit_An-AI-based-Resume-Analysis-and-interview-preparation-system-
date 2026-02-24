@@ -49,16 +49,19 @@ class _AddYourInfoPageState extends State<AddYourInfoPage> {
   final TextEditingController linkedInController = TextEditingController();
   final TextEditingController githubController = TextEditingController();
   final TextEditingController otherController = TextEditingController();
+  late final PageController controller;
   @override
   void initState() {
     super.initState();
-    final currentResumeModel =
-        Provider.of<CurrentResumemodel>(context, listen: false);
     final addInfoViewModel =
         Provider.of<AddInfoViewmodel>(context, listen: false);
+    controller = PageController(initialPage: addInfoViewModel.currentPage);
+
+    final currentResumeModel =
+        Provider.of<CurrentResumemodel>(context, listen: false);
 
     Future.microtask(() {
-      addInfoViewModel.setSkills(currentResumeModel.resumeModel.skills!);
+      addInfoViewModel.setSkills(currentResumeModel.resumeModel.skills ?? []);
       addInfoViewModel.setGender(currentResumeModel.resumeModel.gender);
       addInfoViewModel
           .setMaritalStatus(currentResumeModel.resumeModel.maritalStatus);
@@ -72,10 +75,10 @@ class _AddYourInfoPageState extends State<AddYourInfoPage> {
     expController.text = resumeModel.yearsOfExp;
     emailController.text = resumeModel.email;
     phoneController.text = resumeModel.phone;
-    portfolioController.text = resumeModel.portfolioLink!;
-    linkedInController.text = resumeModel.linkedinLink!;
-    githubController.text = resumeModel.githubLink!;
-    otherController.text = resumeModel.otherLink!;
+    portfolioController.text = resumeModel.portfolioLink ?? '';
+    linkedInController.text = resumeModel.linkedinLink ?? '';
+    githubController.text = resumeModel.githubLink ?? '';
+    otherController.text = resumeModel.otherLink ?? '';
     // educationControllers
     addInfoViewModel.setEducationControllers(context);
     // projectsControllers
@@ -88,7 +91,7 @@ class _AddYourInfoPageState extends State<AddYourInfoPage> {
 
   @override
   void dispose() {
-    super.dispose();
+    controller.dispose();
     firstNameController.dispose();
     lastNameController.dispose();
     bioController.dispose();
@@ -99,14 +102,13 @@ class _AddYourInfoPageState extends State<AddYourInfoPage> {
     linkedInController.dispose();
     githubController.dispose();
     otherController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final addInfoViewModel = Provider.of<AddInfoViewmodel>(context);
     final resumeViewModel = Provider.of<ResumeViewmodel>(context);
-    PageController controller =
-        PageController(initialPage: addInfoViewModel.currentPage);
 
     return PopScope(
       onPopInvoked: (didPop) {

@@ -96,51 +96,20 @@ class AddInfoViewmodel with ChangeNotifier {
   }
 
   void setAchievementsValue(BuildContext context) {
-    // Fetch existing achievements values from CurrentResumemodel
-    List<Map<String, String>>? existingAchievementsValues =
-        context.read<CurrentResumemodel>().resumeModel.achievementsControllers;
-
-    // Map the new achievements values from the controllers
-    List<Map<String, String>> newAchievementsValues =
+    final List<Map<String, String>> newAchievementsValues =
         _achievementsControllers.map((controllerMap) {
       return {
         'achievement': controllerMap['achievementTitleController']!.text,
         'description': controllerMap['achievementDescriptionController']!.text,
       };
-    }).toList();
+    }).toList()
+      ..removeWhere(
+        (item) =>
+            item['achievement']!.trim().isEmpty &&
+            item['description']!.trim().isEmpty,
+      );
 
-    // Initialize _achievementsValues with existing values
-    _achievementsValues = existingAchievementsValues ?? [];
-
-    // Iterate through new achievements values
-    for (var newValue in newAchievementsValues) {
-      bool exists = false;
-
-      // Check if the new value exists in the existing achievements values
-      for (var existingValue in existingAchievementsValues!) {
-        if (existingValue['achievement'] == newValue['achievement'] &&
-            existingValue['description'] == newValue['description']) {
-          exists = true;
-          break;
-        }
-      }
-
-      // If it exists, update the corresponding value in _achievementsValues
-      if (exists) {
-        for (var i = 0; i < _achievementsValues.length; i++) {
-          if (_achievementsValues[i]['achievement'] ==
-                  newValue['achievement'] &&
-              _achievementsValues[i]['description'] ==
-                  newValue['description']) {
-            _achievementsValues[i] = newValue;
-            break;
-          }
-        }
-      } else {
-        // If it doesn't exist, add it to _achievementsValues
-        _achievementsValues.add(newValue);
-      }
-    }
+    _achievementsValues = newAchievementsValues;
 
     log(_achievementsValues.toString(), name: '_achievementsValues');
   }
@@ -185,61 +154,22 @@ class AddInfoViewmodel with ChangeNotifier {
   }
 
   void setWorkExperienceValue(BuildContext context) {
-    // Fetch existing work experience values from CurrentResumemodel
-    List<Map<String, String>>? existingWorkExperienceValues = context
-        .read<CurrentResumemodel>()
-        .resumeModel
-        .workExperienceControllers;
-
-    // Map the new work experience values from the controllers
-    List<Map<String, String>> newWorkExperienceValues =
+    final List<Map<String, String>> newWorkExperienceValues =
         _workExperienceControllers.map((controllerMap) {
       return {
         'companyName': controllerMap['companyNameController']!.text,
         'position': controllerMap['positionController']!.text,
         'description': controllerMap['descriptionController']!.text,
       };
-    }).toList();
+    }).toList()
+      ..removeWhere(
+        (item) =>
+            item['companyName']!.trim().isEmpty &&
+            item['position']!.trim().isEmpty &&
+            item['description']!.trim().isEmpty,
+      );
 
-    // Initialize _workExperienceValues with existing values
-    _workExperienceValues = existingWorkExperienceValues ?? [];
-
-    // Iterate through new work experience values
-    for (var newValue in newWorkExperienceValues) {
-      bool exists = false;
-
-      // Check if the new value exists in the existing work experience values
-      for (var existingValue in existingWorkExperienceValues!) {
-        if (existingValue['companyName'] == newValue['companyName'] &&
-            existingValue['designation'] == newValue['designation'] &&
-            existingValue['startDate'] == newValue['startDate'] &&
-            existingValue['endDate'] == newValue['endDate'] &&
-            existingValue['description'] == newValue['description']) {
-          exists = true;
-          break;
-        }
-      }
-
-      // If it exists, update the corresponding value in _workExperienceValues
-      if (exists) {
-        for (var i = 0; i < _workExperienceValues.length; i++) {
-          if (_workExperienceValues[i]['companyName'] ==
-                  newValue['companyName'] &&
-              _workExperienceValues[i]['designation'] ==
-                  newValue['designation'] &&
-              _workExperienceValues[i]['startDate'] == newValue['startDate'] &&
-              _workExperienceValues[i]['endDate'] == newValue['endDate'] &&
-              _workExperienceValues[i]['description'] ==
-                  newValue['description']) {
-            _workExperienceValues[i] = newValue;
-            break;
-          }
-        }
-      } else {
-        // If it doesn't exist, add it to _workExperienceValues
-        _workExperienceValues.add(newValue);
-      }
-    }
+    _workExperienceValues = newWorkExperienceValues;
 
     log(_workExperienceValues.toString(), name: '_workExperienceValues');
   }
@@ -280,49 +210,20 @@ class AddInfoViewmodel with ChangeNotifier {
   }
 
   void setProjectValue(BuildContext context) {
-    // Fetch existing project values from CurrentResumemodel
-    List<Map<String, String>>? existingProjectValues =
-        context.read<CurrentResumemodel>().resumeModel.projectsControllers;
-
-    // Map the new project values from the controllers
-    List<Map<String, String>> newProjectValues =
+    final List<Map<String, String>> newProjectValues =
         _projectsControllers.map((controllerMap) {
       return {
         'projectTitle': controllerMap['projectTitleController']!.text,
         'description': controllerMap['descriptionController']!.text,
       };
-    }).toList();
+    }).toList()
+      ..removeWhere(
+        (item) =>
+            item['projectTitle']!.trim().isEmpty &&
+            item['description']!.trim().isEmpty,
+      );
 
-    // Initialize _projectValues with existing values
-    _projectValues = existingProjectValues ?? [];
-
-    // Iterate through new project values
-    for (var newValue in newProjectValues) {
-      bool exists = false;
-
-      // Check if the new value exists in the existing project values
-      for (var existingValue in existingProjectValues!) {
-        if (existingValue['projectTitle'] == newValue['projectTitle'] &&
-            existingValue['description'] == newValue['description']) {
-          exists = true;
-          break;
-        }
-      }
-
-      // If it exists, update the corresponding value in _projectValues
-      if (exists) {
-        for (var i = 0; i < _projectValues.length; i++) {
-          if (_projectValues[i]['projectTitle'] == newValue['projectTitle'] &&
-              _projectValues[i]['description'] == newValue['description']) {
-            _projectValues[i] = newValue;
-            break;
-          }
-        }
-      } else {
-        // If it doesn't exist, add it to _projectValues
-        _projectValues.add(newValue);
-      }
-    }
+    _projectValues = newProjectValues;
 
     log(_projectValues.toString(), name: '_projectValues');
   }
@@ -367,12 +268,7 @@ class AddInfoViewmodel with ChangeNotifier {
   }
 
   void setEducationValue(BuildContext context) {
-    // Fetch existing education values from CurrentResumemodel
-    List<Map<String, String>>? existingEducationValues =
-        context.read<CurrentResumemodel>().resumeModel.educationControllers;
-
-    // Map the new education values from the controllers
-    List<Map<String, String>> newEducationValues =
+    final List<Map<String, String>> newEducationValues =
         _educationControllers.map((controllerMap) {
       return {
         'instituteName': controllerMap['instituteNameController']!.text,
@@ -380,43 +276,16 @@ class AddInfoViewmodel with ChangeNotifier {
         'score': controllerMap['scoreController']!.text,
         'passYear': controllerMap['passYearController']!.text,
       };
-    }).toList();
+    }).toList()
+      ..removeWhere(
+        (item) =>
+            item['instituteName']!.trim().isEmpty &&
+            item['courseName']!.trim().isEmpty &&
+            item['score']!.trim().isEmpty &&
+            item['passYear']!.trim().isEmpty,
+      );
 
-    // Initialize _educationValues with existing values
-    _educationValues = existingEducationValues ?? [];
-
-    // Iterate through new education values
-    for (var newValue in newEducationValues) {
-      bool exists = false;
-
-      // Check if the new value exists in the existing education values
-      for (var existingValue in existingEducationValues!) {
-        if (existingValue['instituteName'] == newValue['instituteName'] &&
-            existingValue['courseName'] == newValue['courseName'] &&
-            existingValue['score'] == newValue['score'] &&
-            existingValue['passYear'] == newValue['passYear']) {
-          exists = true;
-          break;
-        }
-      }
-
-      // If it exists, update the corresponding value in _educationValues
-      if (exists) {
-        for (var i = 0; i < _educationValues.length; i++) {
-          if (_educationValues[i]['instituteName'] ==
-                  newValue['instituteName'] &&
-              _educationValues[i]['courseName'] == newValue['courseName'] &&
-              _educationValues[i]['score'] == newValue['score'] &&
-              _educationValues[i]['passYear'] == newValue['passYear']) {
-            _educationValues[i] = newValue;
-            break;
-          }
-        }
-      } else {
-        // If it doesn't exist, add it to _educationValues
-        _educationValues.add(newValue);
-      }
-    }
+    _educationValues = newEducationValues;
 
     log(_educationValues.toString(), name: '_educationValues');
   }
