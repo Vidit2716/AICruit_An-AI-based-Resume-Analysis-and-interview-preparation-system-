@@ -12,10 +12,13 @@ import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import '../../../core/common/provider/current_resumemodel.dart';
 import '../model/resume_model.dart';
+import 'gemini_resume_autofill_parser.dart';
 
 class ResumeRepositories {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GeminiResumeAutofillParser _geminiResumeAutofillParser =
+      GeminiResumeAutofillParser();
 
   ResumeModel _emptyResumeModel() {
     return ResumeModel(
@@ -377,6 +380,14 @@ class ResumeRepositories {
       final fullText = textBuffer.toString();
       if (fullText.trim().isEmpty) {
         return null;
+      }
+
+      final geminiParsedResume = await _geminiResumeAutofillParser.parse(
+        resumeText: fullText,
+        baseResume: baseResume,
+      );
+      if (geminiParsedResume != null) {
+        return geminiParsedResume;
       }
 
       final List<String> lines = fullText
