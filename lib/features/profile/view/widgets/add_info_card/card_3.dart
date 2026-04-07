@@ -26,25 +26,6 @@ class _Card3State extends State<Card3> {
   late final addInfoViewModel =
       Provider.of<AddInfoViewmodel>(context, listen: false);
 
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(
-      () {
-        if (addInfoViewModel.educationForms.isEmpty) {
-          if (addInfoViewModel.educationControllers.isNotEmpty) {
-            addInfoViewModel.educationForms.addAll(
-              List.generate(
-                addInfoViewModel.educationControllers.length,
-                (index) => buildEducationForm(index),
-              ),
-            );
-          }
-        }
-      },
-    );
-  }
-
   void addEducation() {
     setState(() {
       addInfoViewModel.educationControllers.add({
@@ -53,25 +34,25 @@ class _Card3State extends State<Card3> {
         'scoreController': TextEditingController(),
         'passYearController': TextEditingController(),
       });
-      addInfoViewModel.educationForms.add(buildEducationForm(0));
     });
   }
 
   void removeEducation(int index) {
     setState(() {
       addInfoViewModel.educationControllers.removeAt(index);
-      addInfoViewModel.educationForms.removeAt(index);
     });
   }
 
   void datePicker(int index) async {
-    DateTime initialDate = addInfoViewModel
-            .educationControllers[index]['passYearController']!.text.isEmpty
-        ? DateTime.now()
-        : DateFormat('MMM yyyy').parse(
-            addInfoViewModel
-                .educationControllers[index]['passYearController']!.text,
-          );
+    final selectedDateText = addInfoViewModel
+        .educationControllers[index]['passYearController']!
+        .text;
+    DateTime initialDate = DateTime.now();
+    if (selectedDateText.isNotEmpty) {
+      try {
+        initialDate = DateFormat('MMM yyyy').parse(selectedDateText);
+      } catch (_) {}
+    }
 
     DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -185,14 +166,14 @@ class _Card3State extends State<Card3> {
             const SizedBox(height: 16),
             Consumer<AddInfoViewmodel>(
               builder: (context, value, child) {
-                if (value.educationForms.isEmpty) {
+                if (value.educationControllers.isEmpty) {
                   return const SizedBox();
                 }
 
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: value.educationForms.length,
+                  itemCount: value.educationControllers.length,
                   itemBuilder: (context, index) {
                     return buildEducationForm(index);
                   },

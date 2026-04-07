@@ -21,6 +21,15 @@ class Card4 extends StatelessWidget {
     final addInfoViewModel = Provider.of<AddInfoViewmodel>(context);
     final TextEditingController skillController = TextEditingController();
 
+    void submitSkill() {
+      final skill = skillController.text.trim();
+      if (skill.isEmpty) return;
+
+      context.read<AddInfoViewmodel>().addSkill(skill);
+      skillController.clear();
+      Navigator.of(context).pop();
+    }
+
     void addSkillDialog() {
       showDialog(
         context: context,
@@ -33,6 +42,8 @@ class Card4 extends StatelessWidget {
             title: const Text('Add a skill'),
             content: TextField(
               controller: skillController,
+              textInputAction: TextInputAction.done,
+              onSubmitted: (_) => submitSkill(),
               decoration: InputDecoration(
                 hintText: 'eg. Flutter',
                 border: OutlineInputBorder(
@@ -49,15 +60,7 @@ class Card4 extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  if (skillController.text.trim().isEmpty) {
-                    return;
-                  }
-
-                  context
-                      .read<AddInfoViewmodel>()
-                      .addSkill(skillController.text.trim());
-                  skillController.clear();
-                  Navigator.of(context).pop();
+                  submitSkill();
                 },
                 child: const Text('Add'),
               ),

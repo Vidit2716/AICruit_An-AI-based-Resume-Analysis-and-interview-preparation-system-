@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:provider/provider.dart';
@@ -20,8 +22,28 @@ class _ProfilePageState extends State<ProfilePage> {
   int page = 1;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final resumeViewModel =
+          Provider.of<ResumeViewmodel>(context, listen: false);
+      resumeViewModel.getResumeFromFirestore(context);
+      resumeViewModel.getPdfPath();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final resumeViewModel = Provider.of<ResumeViewmodel>(context);
+    final createdPdfPaths = resumeViewModel.createdResumePaths
+        .where((path) => path.isNotEmpty && File(path).existsSync())
+        .toList();
+
+    final List<Map<String, dynamic>> templates = [
+      {'name': 'Classic', 'color': Colors.deepPurple},
+      {'name': 'Modern Blue', 'color': Colors.blue},
+      {'name': 'Fresh Green', 'color': Colors.green},
+    ];
 
     return Scaffold(
       backgroundColor: AppPalette.scaffoldBackgroundColor,
@@ -153,44 +175,91 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(
                             fontSize: 18, fontWeight: FontWeight.w500),
                       ),
-                      if (resumeViewModel.createdResumePath != null)
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => Scaffold(
-                                  appBar: AppBar(title: const Text('PDF View')),
-                                  body: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
+                      if (createdPdfPaths.isNotEmpty)
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: createdPdfPaths.length,
+                          itemBuilder: (context, index) {
+                            final pdfPath = createdPdfPaths[index];
+                            final fileName = pdfPath.split('/').last;
+                            return Container(
+                              margin: const EdgeInsets.only(top: 8),
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade200,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    fileName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Row(
                                     children: [
                                       Expanded(
-                                        child: PDFView(
-                                          filePath:
-                                              resumeViewModel.createdResumePath,
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (context) => Scaffold(
+                                                  appBar: AppBar(
+                                                    title:
+                                                        const Text('PDF View'),
+                                                  ),
+                                                  body: PDFView(
+                                                    filePath: pdfPath,
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          icon: const Icon(Icons.visibility),
+                                          label: const Text('View'),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {
+                                            resumeViewModel.downloadGeneratedPdf(
+                                              pdfPath,
+                                              context,
+                                            );
+                                          },
+                                          icon: const Icon(Icons.download),
+                                          label: const Text('Download'),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: ElevatedButton.icon(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red.shade400,
+                                          ),
+                                          onPressed: () {
+                                            resumeViewModel.removeGeneratedPdf(
+                                              pdfPath,
+                                              context,
+                                            );
+                                          },
+                                          icon: const Icon(Icons.delete_outline),
+                                          label: const Text('Remove'),
                                         ),
                                       ),
                                     ],
                                   ),
-                                ),
+                                ],
                               ),
                             );
                           },
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 4),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 18),
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade600,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Text(
-                              'PDF 1',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
                         )
                       else
                         const Text(
@@ -205,10 +274,60 @@ class _ProfilePageState extends State<ProfilePage> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'No Templates available yet',
-                        style: TextStyle(fontSize: 16),
+                      const SizedBox(height: 10),
+                      SizedBox(
+                        height: 92,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: templates.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: 8),
+                          itemBuilder: (context, index) {
+                            final template = templates[index];
+                            final isSelected =
+                                resumeViewModel.selectedTemplateIndex == index;
+                            return GestureDetector(
+                              onTap: () {
+                                resumeViewModel.setSelectedTemplateIndex(index);
+                              },
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                width: 150,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: (template['color'] as Color)
+                                      .withOpacity(isSelected ? 0.32 : 0.15),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? Colors.black
+                                        : Colors.grey.shade400,
+                                    width: isSelected ? 2 : 1,
+                                  ),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      template['name'] as String,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    Text(
+                                      isSelected ? 'Selected' : 'Tap to select',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade700,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton(
@@ -216,9 +335,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           backgroundColor: Colors.black,
                           padding: const EdgeInsets.all(12),
                         ),
-                        onPressed: () {
-                          resumeViewModel.createResumePDF(context);
-                        },
+                        onPressed: resumeViewModel.isLoading
+                            ? null
+                            : () {
+                                resumeViewModel.createResumePDF(context);
+                              },
                         child: resumeViewModel.isLoading
                             ? const Loader(loaderSize: 20)
                             : const Center(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:resume_ai/core/common/widgets/loader.dart';
@@ -95,7 +97,7 @@ class SettingsPage extends StatelessWidget {
                             },
                           );
                         } catch (e) {
-                          print(e.toString());
+                          log(e.toString(), name: 'SettingsPage.logout');
                         }
                       },
                       child: const Text(
@@ -132,7 +134,7 @@ class SettingsPage extends StatelessWidget {
                             },
                           );
                         } catch (e) {
-                          print(e.toString());
+                          log(e.toString(), name: 'SettingsPage.deleteResume');
                         }
                       },
                       child: const Text(

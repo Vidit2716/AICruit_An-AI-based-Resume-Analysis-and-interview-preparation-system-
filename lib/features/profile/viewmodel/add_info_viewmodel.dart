@@ -87,9 +87,9 @@ class AddInfoViewmodel with ChangeNotifier {
       for (var achievementValue in achievementsValues) {
         _achievementsControllers.add({
           'achievementTitleController': TextEditingController()
-            ..text = achievementValue['achievement']!,
+            ..text = achievementValue['achievement'] ?? '',
           'achievementDescriptionController': TextEditingController()
-            ..text = achievementValue['description']!,
+            ..text = achievementValue['description'] ?? '',
         });
       }
     }
@@ -143,11 +143,11 @@ class AddInfoViewmodel with ChangeNotifier {
       for (var workExperienceValue in workExperienceValues) {
         _workExperienceControllers.add({
           'companyNameController': TextEditingController()
-            ..text = workExperienceValue['companyName']!,
+            ..text = workExperienceValue['companyName'] ?? '',
           'positionController': TextEditingController()
-            ..text = workExperienceValue['position']!,
+            ..text = workExperienceValue['position'] ?? '',
           'descriptionController': TextEditingController()
-            ..text = workExperienceValue['description']!,
+            ..text = workExperienceValue['description'] ?? '',
         });
       }
     }
@@ -201,9 +201,9 @@ class AddInfoViewmodel with ChangeNotifier {
       for (var projectValue in projectValues) {
         _projectsControllers.add({
           'projectTitleController': TextEditingController()
-            ..text = projectValue['projectTitle']!,
+            ..text = projectValue['projectTitle'] ?? '',
           'descriptionController': TextEditingController()
-            ..text = projectValue['description']!,
+            ..text = projectValue['description'] ?? '',
         });
       }
     }
@@ -255,13 +255,13 @@ class AddInfoViewmodel with ChangeNotifier {
       for (var educationValue in educationValues) {
         _educationControllers.add({
           'instituteNameController': TextEditingController()
-            ..text = educationValue['instituteName']!,
+            ..text = educationValue['instituteName'] ?? '',
           'courseNameController': TextEditingController()
-            ..text = educationValue['courseName']!,
+            ..text = educationValue['courseName'] ?? '',
           'scoreController': TextEditingController()
-            ..text = educationValue['score']!,
+            ..text = educationValue['score'] ?? '',
           'passYearController': TextEditingController()
-            ..text = educationValue['passYear']!,
+            ..text = educationValue['passYear'] ?? '',
         });
       }
     }
@@ -339,9 +339,9 @@ class AddInfoViewmodel with ChangeNotifier {
     required PageController pageController,
     required List<GlobalKey<FormState>> formKeys,
   }) {
-    int currentPage = pageController.page!.toInt();
+    int currentPage = pageController.page?.round() ?? 0;
     bool isValid = false;
-    print(currentPage);
+    log('$currentPage', name: 'AddInfoViewmodel.nextPage.currentPage');
 
     if (currentPage == 2) {
       isValid = formKeys[2].currentState!.validate();

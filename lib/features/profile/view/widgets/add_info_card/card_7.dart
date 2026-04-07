@@ -25,23 +25,6 @@ class _Card7State extends State<Card7> {
   late final addInfoViewModel =
       Provider.of<AddInfoViewmodel>(context, listen: false);
 
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      if (addInfoViewModel.workExperienceForms.isEmpty) {
-        if (addInfoViewModel.workExperienceControllers.isNotEmpty) {
-          addInfoViewModel.workExperienceForms.addAll(
-            List.generate(
-              addInfoViewModel.workExperienceControllers.length,
-              (index) => buildWorkExperienceFrom(index),
-            ),
-          );
-        }
-      }
-    });
-  }
-
   void addWorkExperience() {
     setState(() {
       addInfoViewModel.workExperienceControllers.add({
@@ -49,14 +32,12 @@ class _Card7State extends State<Card7> {
         'positionController': TextEditingController(),
         'descriptionController': TextEditingController(),
       });
-      addInfoViewModel.workExperienceForms.add(buildWorkExperienceFrom(0));
     });
   }
 
   void removeWorkExperience(int index) {
     setState(() {
       addInfoViewModel.workExperienceControllers.removeAt(index);
-      addInfoViewModel.workExperienceForms.removeAt(index);
     });
   }
 
@@ -132,14 +113,14 @@ class _Card7State extends State<Card7> {
             const SizedBox(height: 16),
             Consumer<AddInfoViewmodel>(
               builder: (context, value, child) {
-                if (value.workExperienceForms.isEmpty) {
+                if (value.workExperienceControllers.isEmpty) {
                   return const SizedBox();
                 }
 
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: value.workExperienceForms.length,
+                  itemCount: value.workExperienceControllers.length,
                   itemBuilder: (context, index) {
                     return buildWorkExperienceFrom(index);
                   },

@@ -3,6 +3,7 @@ import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:provider/provider.dart';
 
+import '../pages/add_your_info_page.dart';
 import '../../viewmodel/resume_viewmodel.dart';
 
 class UploadResume extends StatelessWidget {
@@ -50,33 +51,82 @@ class UploadResume extends StatelessWidget {
             dashPattern: const [10, 2],
             radius: const Radius.circular(12),
             child: Container(
-              height: 380,
-              padding: const EdgeInsets.all(12).copyWith(top: 0),
+              padding: const EdgeInsets.all(12),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  const Row(
                     children: [
-                      IconButton(
-                        onPressed: () => resumeViewModel.removeResumePath(),
-                        icon: const Icon(Icons.cancel_outlined),
-                        color: Colors.red,
-                        tooltip: 'Remove Resume',
-                      ),
-                      IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.download_done_rounded),
-                        color: Colors.green,
-                        tooltip: 'Save Resume',
+                      Icon(Icons.check_circle, color: Colors.green),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Resume uploaded successfully',
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ],
                   ),
-                  Expanded(
-                    child: PDFView(
-                      key: Key(resumeViewModel.resumePath!),
-                      filePath: resumeViewModel.resumePath!,
-                      enableSwipe: true,
-                      swipeHorizontal: false,
+                  const SizedBox(height: 8),
+                  Text(
+                    resumeViewModel.resumePath!.split('/').last,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(color: Colors.black54),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () => resumeViewModel.removeResumePath(),
+                        icon: const Icon(Icons.delete_outline),
+                        label: const Text('Remove'),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => Scaffold(
+                                appBar:
+                                    AppBar(title: const Text('Uploaded Resume')),
+                                body: PDFView(
+                                  key: Key(resumeViewModel.resumePath!),
+                                  filePath: resumeViewModel.resumePath!,
+                                  enableSwipe: true,
+                                  swipeHorizontal: false,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.visibility_outlined),
+                        label: const Text('Preview'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: resumeViewModel.isLoading
+                          ? null
+                          : () async {
+                              final didAutoFill = await resumeViewModel
+                                  .autoFillProfileFromUploadedResume(context);
+                              if (didAutoFill && context.mounted) {
+                                Navigator.of(context)
+                                    .pushNamed(AddYourInfoPage.routeName);
+                              }
+                            },
+                      icon: resumeViewModel.isLoading
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.auto_fix_high),
+                      label: const Text('Auto Fill and Continue'),
                     ),
                   ),
                 ],

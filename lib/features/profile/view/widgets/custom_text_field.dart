@@ -38,6 +38,15 @@ class CustomTextField extends StatelessWidget {
             onTapOutside: (event) {
               FocusScope.of(context).unfocus();
             },
+            onFieldSubmitted: (_) {
+              if (textInputAction == TextInputAction.next) {
+                FocusScope.of(context).nextFocus();
+                return;
+              }
+              if (textInputAction == TextInputAction.done) {
+                FocusScope.of(context).unfocus();
+              }
+            },
             maxLines: maxLines,
             validator: (value) {
               if (value == null || value.isEmpty) {

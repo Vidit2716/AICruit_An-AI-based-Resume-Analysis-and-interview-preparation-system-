@@ -25,39 +25,18 @@ class _Card8State extends State<Card8> {
   late final addInforViewModel =
       Provider.of<AddInfoViewmodel>(context, listen: false);
 
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(
-      () {
-        if (addInforViewModel.achievementsForms.isEmpty) {
-          if (addInforViewModel.achievementsControllers.isNotEmpty) {
-            addInforViewModel.achievementsForms.addAll(
-              List.generate(
-                addInforViewModel.achievementsControllers.length,
-                (index) => buildAchievementForm(index),
-              ),
-            );
-          }
-        }
-      },
-    );
-  }
-
   void addAchievement() {
     setState(() {
       addInforViewModel.achievementsControllers.add({
         'achievementTitleController': TextEditingController(),
         'achievementDescriptionController': TextEditingController(),
       });
-      addInforViewModel.achievementsForms.add(buildAchievementForm(0));
     });
   }
 
   void removeAchievement(int index) {
     setState(() {
       addInforViewModel.achievementsControllers.removeAt(index);
-      addInforViewModel.achievementsForms.removeAt(index);
     });
   }
 
@@ -124,14 +103,14 @@ class _Card8State extends State<Card8> {
             const SizedBox(height: 16),
             Consumer<AddInfoViewmodel>(
               builder: (context, value, child) {
-                if (value.achievementsForms.isEmpty) {
+                if (value.achievementsControllers.isEmpty) {
                   return const SizedBox();
                 }
 
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: value.achievementsForms.length,
+                  itemCount: value.achievementsControllers.length,
                   itemBuilder: (context, index) {
                     return buildAchievementForm(index);
                   },

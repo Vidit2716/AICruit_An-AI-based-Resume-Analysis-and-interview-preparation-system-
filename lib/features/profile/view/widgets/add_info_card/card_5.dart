@@ -25,39 +25,18 @@ class _Card5State extends State<Card5> {
   late final addInforViewModel =
       Provider.of<AddInfoViewmodel>(context, listen: false);
 
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(
-      () {
-        if (addInforViewModel.projectsForms.isEmpty) {
-          if (addInforViewModel.projectsControllers.isNotEmpty) {
-            addInforViewModel.projectsForms.addAll(
-              List.generate(
-                addInforViewModel.projectsControllers.length,
-                (index) => buildProjectForm(index),
-              ),
-            );
-          }
-        }
-      },
-    );
-  }
-
   void addProject() {
     setState(() {
       addInforViewModel.projectsControllers.add({
         'projectTitleController': TextEditingController(),
         'descriptionController': TextEditingController(),
       });
-      addInforViewModel.projectsForms.add(buildProjectForm(0));
     });
   }
 
   void removeProject(int index) {
     setState(() {
       addInforViewModel.projectsControllers.removeAt(index);
-      addInforViewModel.projectsForms.removeAt(index);
     });
   }
 
@@ -124,14 +103,14 @@ class _Card5State extends State<Card5> {
             const SizedBox(height: 16),
             Consumer<AddInfoViewmodel>(
               builder: (context, value, child) {
-                if (value.projectsForms.isEmpty) {
+                if (value.projectsControllers.isEmpty) {
                   return const SizedBox();
                 }
 
                 return ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: value.projectsForms.length,
+                  itemCount: value.projectsControllers.length,
                   itemBuilder: (context, index) {
                     return buildProjectForm(index);
                   },

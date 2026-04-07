@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:expandable_page_view/expandable_page_view.dart';
@@ -111,7 +113,7 @@ class _AddYourInfoPageState extends State<AddYourInfoPage> {
     final resumeViewModel = Provider.of<ResumeViewmodel>(context);
 
     return PopScope(
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, result) {
         if (didPop) {
           addInfoViewModel.setCurrentPageValue(0);
         }
@@ -294,7 +296,10 @@ class _AddYourInfoPageState extends State<AddYourInfoPage> {
                                             resumeModel, context);
                                       });
                                     } catch (e) {
-                                      print(e.toString());
+                                      log(
+                                        e.toString(),
+                                        name: 'AddYourInfoPage.submit',
+                                      );
                                     }
                                   },
                                   child: const Text(

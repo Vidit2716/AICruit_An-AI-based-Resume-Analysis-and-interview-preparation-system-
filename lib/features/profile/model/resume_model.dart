@@ -63,46 +63,43 @@ class ResumeModel {
   }
 
   factory ResumeModel.fromMap(Map<String, dynamic> map) {
+    List<Map<String, String>> parseStringMapList(String key) {
+      final dynamic rawList = map[key];
+      if (rawList is! List) return <Map<String, String>>[];
+
+      return rawList
+          .whereType<Map>()
+          .map(
+            (item) => item.map(
+              (k, v) => MapEntry(
+                k.toString(),
+                v?.toString() ?? '',
+              ),
+            ),
+          )
+          .toList();
+    }
+
     return ResumeModel(
-      firstName: map['firstName'] as String,
-      lastName: map['lastName'] as String,
-      bio: map['bio'] as String,
-      yearsOfExp: map['yearsOfExp'] as String,
-      email: map['email'] as String,
-      phone: map['phone'] as String,
-      skills: map['skills'] != null
-          ? List<String>.from(
-              (map['skills'] as List<dynamic>).map((item) => item as String))
-          : null,
-      portfolioLink:
-          map['portfolioLink'] != null ? map['portfolioLink'] as String : null,
-      linkedinLink:
-          map['linkedinLink'] != null ? map['linkedinLink'] as String : null,
-      githubLink:
-          map['githubLink'] != null ? map['githubLink'] as String : null,
-      otherLink: map['otherLink'] != null ? map['otherLink'] as String : null,
-      gender: map['gender'] as String,
-      maritalStatus: map['maritalStatus'] as String,
-      projectsControllers: map['projectsControllers'] != null
-          ? List<Map<String, String>>.from(
-              (map['projectsControllers'] as List<dynamic>)
-                  .map((item) => Map<String, String>.from(item as Map)))
-          : null,
-      workExperienceControllers: map['workExperienceControllers'] != null
-          ? List<Map<String, String>>.from(
-              (map['workExperienceControllers'] as List<dynamic>)
-                  .map((item) => Map<String, String>.from(item as Map)))
-          : null,
-      educationControllers: map['educationControllers'] != null
-          ? List<Map<String, String>>.from(
-              (map['educationControllers'] as List<dynamic>)
-                  .map((item) => Map<String, String>.from(item as Map)))
-          : null,
-      achievementsControllers: map['achievementsControllers'] != null
-          ? List<Map<String, String>>.from(
-              (map['achievementsControllers'] as List<dynamic>)
-                  .map((item) => Map<String, String>.from(item as Map)))
-          : null,
+      firstName: (map['firstName'] ?? '').toString(),
+      lastName: (map['lastName'] ?? '').toString(),
+      bio: (map['bio'] ?? '').toString(),
+      yearsOfExp: (map['yearsOfExp'] ?? '').toString(),
+      email: (map['email'] ?? '').toString(),
+      phone: (map['phone'] ?? '').toString(),
+      skills: map['skills'] is List
+          ? (map['skills'] as List).map((item) => item.toString()).toList()
+          : <String>[],
+      portfolioLink: (map['portfolioLink'] ?? '').toString(),
+      linkedinLink: (map['linkedinLink'] ?? '').toString(),
+      githubLink: (map['githubLink'] ?? '').toString(),
+      otherLink: (map['otherLink'] ?? '').toString(),
+      gender: (map['gender'] ?? 'Male').toString(),
+      maritalStatus: (map['maritalStatus'] ?? 'Single').toString(),
+      projectsControllers: parseStringMapList('projectsControllers'),
+      workExperienceControllers: parseStringMapList('workExperienceControllers'),
+      educationControllers: parseStringMapList('educationControllers'),
+      achievementsControllers: parseStringMapList('achievementsControllers'),
     );
   }
 
